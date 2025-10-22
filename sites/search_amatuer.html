@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>WaveSearch - Dataset Search Amateur </title>
+
+<style>
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f8; color: #333; padding: 20px; }
+header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+header h1 { color: #1a73e8; margin: 0; }
+header nav a { text-decoration: none; color: #1a73e8; margin-left: 15px; font-weight: bold; }
+header nav a:hover { color: #155ab6; }
+.container { max-width: 1200px; margin: 0 auto; }
+input, button { padding: 8px 10px; margin: 5px 5px 5px 0; font-size: 1em; }
+button { background-color: #1a73e8; color: #fff; border: none; border-radius: 5px; cursor: pointer; }
+button:hover { background-color: #155ab6; }
+#results { margin-top: 20px; }
+table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+th { background-color: #1a73e8; color: #fff; }
+tr:nth-child(even) { background-color: #f2f2f2; }
+tr:hover { background-color: #dce7ff; }
+</style>
+</head>
+<body>
+
+<header>
+    <h1>WaveSearch - Amateur Radio Dataset</h1>
+    <nav>
+        <a href="../index.html">Back to Index</a>
+    </nav>
+</header>
+
+
+<div class="container">
+    <div>
+        <input type="text" id="callsign" placeholder="Call Sign">
+        <input type="text" id="name" placeholder="Name">
+        <input type="text" id="street_address" placeholder="Street Address">
+        <input type="text" id="city" placeholder="City">
+        <input type="text" id="state" placeholder="State">
+        <input type="text" id="zip" placeholder="ZIP">
+        <input type="text" id="frn" placeholder="FRN">
+        <button onclick="search()">Search</button>
+    </div>
+
+    <div id="results"></div>
+</div>
+
+<script>
+let dataset = [];
+
+// Get dataset filename from URL query
+const params = new URLSearchParams(window.location.search);
+let datasetFile = params.get('dataset');
+if (datasetFile) {
+    // Adjust path to point one directory up
+    datasetFile = '../' + datasetFile;
+}
+async function loadDataset() {
+    const resultsDiv = document.getElementById('results');
+    resultsDiv.innerHTML = `Loading ${datasetFile}...`;
+
+    try {
+        const response = await fetch(datasetFile);
+        const text = await response.text();
+        dataset = text.trim().split('\n').map(line => JSON.parse(line));
+        resultsDiv.innerHTML = `Loaded ${dataset.length} records from ${datasetFile}`;
+    } catch (err) {
+        console.error('Failed to load dataset:', err);
+        resultsDiv.innerHTML = 'Failed to load dataset.';
+    }
+}
+
+function search() {
+    const callsignQuery = document.getElementById('callsign').value.toLowerCase();
+    const nameQuery = document.getElementById('name').value.toLowerCase();
+    const streetQuery = document.getElementById('street_address').value.toLowerCase();
+    const cityQuery = document.getElementById('city').value.toLowerCase();
+    const stateQuery = document.getElementById('state').value.toLowerCase();
+    const zipQuery = document.getElementById('zip').value.toLowerCase();
+    const frnQuery = document.getElementById('frn').value.toLowerCase();
+
+    const resultsDiv = document.getElementById('results');
+    resultsDiv.innerHTML = '';
+
+    if (!dataset.length) return;
+
+    const matches = dataset.filter(rec => {
+        return (!callsignQuery || (rec.call_sign && rec.call_sign.toLowerCase().includes(callsignQuery))) &&
+               (!nameQuery || (rec.name && rec.name.toLowerCase().includes(nameQuery))) &&
+               (!streetQuery || (rec.street_address && rec.street_address.toLowerCase().includes(streetQuery))) &&
+               (!cityQuery || (rec.city && rec.city.toLowerCase().includes(cityQuery))) &&
+               (!stateQuery || (rec.state && rec.state.toLowerCase().includes(stateQuery))) &&
+               (!zipQuery || (rec.zip && rec.zip.toLowerCase().includes(zipQuery))) &&
+               (!frnQuery || (rec.frn && rec.frn.toLowerCase().includes(frnQuery)));
+    });
+
+    if (!matches.length) {
+        resultsDiv.textContent = 'No matches found.';
+        return;
+    }
+
+    const table = document.createElement('table');
+    const header = document.createElement('tr');
+    ['Call Sign','Name','Street Address','City','State','ZIP','FRN'].forEach(h => {
+        const th = document.createElement('th');
+        th.textContent = h;
+        header.appendChild(th);
+    });
+    table.appendChild(header);
+
+    matches.forEach(rec => {
+        const tr = document.createElement('tr');
+        ['call_sign','name','street_address','city','state','zip','frn'].forEach(f => {
+            const td = document.createElement('td');
+            td.textContent = rec[f] || '';
+            tr.appendChild(td);
+        });
+        table.appendChild(tr);
+    });
+
+    resultsDiv.appendChild(table);
+}
+
+// Load dataset on page load
+if (datasetFile) loadDataset();
+else document.getElementById('results').innerHTML = 'No dataset selected.';
+</script>
+
+</body>
+</html>

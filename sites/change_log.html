@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>About - WaveSearch</title>
+
+<style>
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f8; color: #333; padding: 20px; }
+header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+header h1 { color: #1a73e8; margin: 0; }
+header nav a { text-decoration: none; color: #1a73e8; margin-left: 15px; font-weight: bold; }
+header nav a:hover { color: #155ab6; }
+.container { max-width: 900px; margin: 0 auto; line-height: 1.6; }
+h2 { color: #1a73e8; margin-top: 30px; }
+p { margin-bottom: 15px; }
+ul { margin-left: 20px; }
+</style>
+</head>
+<body>
+
+<header>
+    <h1>About WaveSearch</h1>
+    <nav>
+        <a href="../index.html">Back to Index</a>
+    </nav>
+</header>
+
+<hr style="margin: 40px 0; border: none; border-top: 2px solid #ddd;">
+
+<div class="container" style="display: flex; flex-wrap: wrap; gap: 40px; justify-content: space-between;">
+
+    <!-- Change Log -->
+    <div style="flex: 1; min-width: 300px;">
+        <h2>Change Log</h2>
+        <ul>
+            <li><strong>v0.0.1a (Initial Alpha)</strong> – Core architecture built and functional.</li>
+            <li>Added FCC Amateur Radio dataset parsing and JSON formatting.</li>
+            <li>Integrated GMRS, Aviation, and Tower Structure datasets.</li>
+            <li>Implemented lightweight local search index.</li>
+            <li>Improved JSONL compression and dataset cleanup.</li>
+        </ul>
+    </div>
+
+    <!-- Planned Features -->
+    <div style="flex: 1; min-width: 300px;">
+        <h2>Planned Features</h2>
+        <ul style="list-style-type: none; padding-left: 0;">
+            <li>☐ <strong>Web-based API</strong> for third-party apps</li>
+            <li>☐ <strong>Automatic dataset updater</strong> (scheduled FCC/FAA sync)</li>
+            <li>☐ <strong>Local caching</strong> for mobile/offline lookups</li>
+            <li>☐ <strong>Map visualization</strong> (Leaflet or OpenStreetMap integration)</li>
+            <li>☐ <strong>Callsign history tracking</strong></li>
+            <li>☐ <strong>Donation system</strong> & public transparency dashboard</li>
+            <li>☐ <strong>Plugin API</strong> for HAM logging and mapping tools</li>
+        </ul>
+    </div>
+</div>
+
+
+</body>
+</html>

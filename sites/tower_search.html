@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>WaveSearch - Tower Dataset Search</title>
+<style>
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f8; color: #333; padding: 20px; }
+header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+header h1 { color: #1a73e8; margin: 0; }
+header nav a { text-decoration: none; color: #1a73e8; margin-left: 15px; font-weight: bold; }
+header nav a:hover { color: #155ab6; }
+.container { max-width: 1200px; margin: 0 auto; }
+input, button { padding: 8px 10px; margin: 5px 5px 5px 0; font-size: 1em; }
+button { background-color: #1a73e8; color: #fff; border: none; border-radius: 5px; cursor: pointer; }
+button:hover { background-color: #155ab6; }
+#results { margin-top: 20px; }
+table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+th { background-color: #1a73e8; color: #fff; }
+tr:nth-child(even) { background-color: #f2f2f2; }
+tr:hover { background-color: #dce7ff; }
+.note { font-size: 0.9em; color: #666; margin-top: 5px; }
+</style>
+</head>
+<body>
+
+<header>
+    <h1>WaveSearch - Tower Dataset</h1>
+    <nav>
+        <a href="../index.html">Back to Index</a>
+    </nav>
+</header>
+
+<div class="container">
+    <div>
+        <input type="text" id="file_number" placeholder="File Number (comma-separated)">
+        <input type="text" id="unique_id" placeholder="Unique ID (comma-separated)">
+        <input type="text" id="city" placeholder="City (comma-separated)">
+        <input type="text" id="state" placeholder="State (comma-separated)">
+        <input type="text" id="zip" placeholder="ZIP (comma-separated)">
+        <input type="text" id="contact_name" placeholder="Contact Name (comma-separated)">
+        <input type="text" id="latitude" placeholder="Latitude (~match)">
+        <input type="text" id="longitude" placeholder="Longitude (~match)">
+        <button onclick="search()">Search</button>
+        <p class="note">Tip: Separate multiple cities, states, or ZIPs with commas. Coordinates allow partial match.</p>
+    </div>
+
+    <div id="results"></div>
+</div>
+
+<script>
+let dataset = [];
+
+const params = new URLSearchParams(window.location.search);
+let datasetFile = params.get('dataset');
+if (datasetFile) {
+    // Adjust path to point one directory up
+    datasetFile = '../' + datasetFile;
+}
+async function loadDataset() {
+    const resultsDiv = document.getElementById('results');
+    resultsDiv.innerHTML = `Loading ${datasetFile}...`;
+
+    try {
+        const response = await fetch(datasetFile);
+        const text = await response.text();
+        dataset = text.trim().split('\n').map(line => JSON.parse(line));
+        resultsDiv.innerHTML = `Loaded ${dataset.length.toLocaleString()} tower records.`;
+    } catch (err) {
+        console.error('Failed to load dataset:', err);
+        resultsDiv.innerHTML = 'Failed to load tower dataset.';
+    }
+}
+
+function parseList(input) {
+    return input.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+}
+
+function matchAny(value, list) {
+    if (!list.length) return true;
+    if (!value) return false;
+    return list.some(q => value.toLowerCase().includes(q));
+}
+
+function approxMatch(value, query, tolerance = 0.1) {
+    if (!value || !query) return true;
+    const val = parseFloat(value);
+    const q = parseFloat(query);
+    if (isNaN(val) || isNaN(q)) return false;
+    return Math.abs(val - q) <= tolerance;
+}
+
+function search() {
+    const fileQuery = parseList(document.getElementById('file_number').value);
+    const uniqueQuery = parseList(document.getElementById('unique_id').value);
+    const cityQuery = parseList(document.getElementById('city').value);
+    const stateQuery = parseList(document.getElementById('state').value);
+    const zipQuery = parseList(document.getElementById('zip').value);
+    const contactQuery = parseList(document.getElementById('contact_name').value);
+    const latQuery = document.getElementById('latitude').value.trim();
+    const lonQuery = document.getElementById('longitude').value.trim();
+
+    const resultsDiv = document.getElementById('results');
+    resultsDiv.innerHTML = '';
+
+    if (!dataset.length) {
+        resultsDiv.textContent = 'Dataset not loaded.';
+        return;
+    }
+
+    const matches = dataset.filter(rec => {
+        return matchAny(rec.file_number, fileQuery) &&
+               matchAny(rec.unique_id, uniqueQuery) &&
+               matchAny(rec.city, cityQuery) &&
+               matchAny(rec.state, stateQuery) &&
+               matchAny(rec.zip_code, zipQuery) &&
+               matchAny(rec.contact_name, contactQuery) &&
+               approxMatch(rec.latitude, latQuery) &&
+               approxMatch(rec.longitude, lonQuery);
+    });
+
+    if (!matches.length) {
+        resultsDiv.textContent = 'No matching tower records found.';
+        return;
+    }
+
+    const table = document.createElement('table');
+    const header = document.createElement('tr');
+    ['File #','Unique ID','City','State','ZIP','Contact','Latitude','Longitude'].forEach(h => {
+        const th = document.createElement('th');
+        th.textContent = h;
+        header.appendChild(th);
+    });
+    table.appendChild(header);
+
+    matches.forEach(rec => {
+        const tr = document.createElement('tr');
+        ['file_number','unique_id','city','state','zip_code','contact_name','latitude','longitude'].forEach(f => {
+            const td = document.createElement('td');
+            td.textContent = rec[f] || '';
+            tr.appendChild(td);
+        });
+        table.appendChild(tr);
+    });
+
+    resultsDiv.appendChild(table);
+}
+
+loadDataset();
+</script>
+
+</body>
+</html>

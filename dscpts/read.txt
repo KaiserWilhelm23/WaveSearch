@@ -1,0 +1,1 @@
+dscpts/ is a directory for all download scripts. That also filter data into JSON. 

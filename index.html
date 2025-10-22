@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>WaveSearch - Operator Database Portal</title>
+<style>
+/* Reset some defaults */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f6f8;
+    color: #333;
+    padding: 40px 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+header h1 {
+    font-size: 2.2em;
+    color: #1a73e8;
+    margin-bottom: 10px;
+}
+
+header p {
+    font-size: 1em;
+    color: #555;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.dataset-link {
+    display: block;
+    background-color: #ffffff;
+    padding: 15px 20px;
+    margin: 15px 0;
+    font-size: 1.1em;
+    color: #1a73e8;
+    text-decoration: none;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: all 0.2s ease;
+}
+
+.dataset-link:hover {
+    background-color: #1a73e8;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+footer {
+    text-align: center;
+    margin-top: 60px;
+    font-size: 0.9em;
+    color: #777;
+}
+
+header h2 {
+    display: flex; justify-content: flex-end; align-items: center; margin-bottom: 10px; 
+}
+
+</style>
+</head>
+<body>
+
+<header h2>
+    <nav>
+        <a href="sites/about.html">About</a>
+        <a href="sites/change_log.html">Change Log</a>
+
+    </nav>
+</header h2>
+
+
+<header>
+    <h1>WaveSearch</h1>
+    <p>Unified Operator Database Portal – Browse Ham, GMRS, Marine, Aviation & Towers</p>
+</header>
+
+<div class="container">
+    <a class="dataset-link" href="sites/search_amatuer.html?dataset=data_sets/amateur_clean.json">Amateur Radio</a>
+    <a class="dataset-link" href="sites/search_gmrs.html?dataset=data_sets/gmrs_clean.json">GMRS</a>
+    <a class="dataset-link" href="sites/search_aircr.html?dataset=data_sets/aircr_clean.json">Aviation</a>
+    <a class="dataset-link" href="sites/tower_search.html?dataset=data_sets/tower_merged.json">Tower Structures</a>
+</div>
+
+<footer>
+    &copy; 2025 WaveSearch. All datasets are publicly available or sourced from FCC/FAA.
+</footer>
+
+<footer>Version: 0.0.1a</footer>
+<footer>By: N4WHP - William Payne</footer>
+
+
+</body>
+</html>
+
+
